@@ -1,0 +1,7 @@
+matplotlib
+gunicorn
+lxml
+flask
+requests
+bs4
+numpy

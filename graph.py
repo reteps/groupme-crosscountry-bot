@@ -9,8 +9,8 @@ from flask import request
 
 
 DEBUG = False
-GROUPME_BOT_ID = "4ff5c4cc8bd05e0f362bd3c364"
-GROUPME_IMAGE_SERVICE_TOKEN = "rz9NxyqCwNwCRx79oJS0l6wFwfSuNVlRm99m9o4O"
+GROUPME_BOT_ID = ""
+GROUPME_IMAGE_SERVICE_TOKEN = ""
 
 app = Flask(__name__)
 def plotTimes(data):

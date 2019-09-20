@@ -2,7 +2,7 @@
 
 A heroku template for creating a groupme cross country bot.
 
-![Image of graph](https://i.imgur.com/t5JeON3.png Example Image)
+![Image of graph](https://i.imgur.com/t5JeON3.png "Example Image")
 
 ## Setup
 

@@ -6,22 +6,24 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter, SecondLocator
 from flask import Flask
 from flask import request
+import mebots
 
 
 DEBUG = False
-GROUPME_BOT_ID = ""
 GROUPME_IMAGE_SERVICE_TOKEN = ""
 
 app = Flask(__name__)
-def plotTimes(data):
+bot = mebots.Bot("crosscountrybot", os.environ["BOT_TOKEN"])
+
+def plotTimes(group_id, data):
     formatter = DateFormatter('%m-%d-%y')
     x = data["x"]
     y = data["y"]
     _, axes = plt.subplots(1, data["years"], sharey=True)
     if len(data['boundaries']) == 0:
-        sendMessage(text=f'{data["name"]} has no 5k races recorded.')
+        sendMessage(group_id, text=f'{data["name"]} has no 5k races recorded.')
         return False
-    
+
     if data["years"] == 1:
         axes = [axes]
     if DEBUG:
@@ -51,7 +53,7 @@ def plotTimes(data):
     try:
         plt.sca(axes[0])
     except IndexError:
-        sendMessage(text=f"{data['name']} has no times recorded.")
+        sendMessage(group_id, text=f"{data['name']} has no times recorded.")
         return False
     plt.xlabel('Date')
     plt.ylabel('5k Time')
@@ -94,11 +96,11 @@ def getTimes(runner_id):
     data["years"] = len(seasons)
     y = len(seasons) - 1
     for i in reversed(range(len(seasons))):
-         
+
         tag = seasons[i].find("h5",text="5,000 Meters")
         if tag == None:
             continue
-        table = tag.next_sibling 
+        table = tag.next_sibling
         year = seasons[i]["class"][4][1:]
         races = table.findAll("tr")
         data["boundaries"][y - i] = {}
@@ -109,20 +111,20 @@ def getTimes(runner_id):
             raw_date = races[j].find("td",{"style":"width: 60px;"}).text
             if DEBUG:
                 print(time_regex, raw_date)
-            date = datetime.datetime.strptime(f"{raw_date}, {year}", "%b %d, %Y") 
+            date = datetime.datetime.strptime(f"{raw_date}, {year}", "%b %d, %Y")
             data["x"].append(date)
             data["y"].append(time)
             if j == 0:
                 data["boundaries"][y - i]["start"] = date - datetime.timedelta(days=5)
 
         data["boundaries"][y - i]["end"] = data["x"][-1] + datetime.timedelta(days=5)
-    
+
     if DEBUG:
         print(json.dumps(data, default=str, sort_keys=True, indent=4))
     return data
-def sendMessage(img="",text=""):
+def sendMessage(group_id, img="",text=""):
     data = {
-        "bot_id": GROUPME_BOT_ID,
+        "bot_id": bot.instance(group_id).id,
         "text":text,
         "picture_url":img
     }
@@ -133,20 +135,20 @@ def sendMessage(img="",text=""):
 
 @app.route('/message', methods=['POST'])
 def message():
-    text = request.get_json()['text'].lower()
+    data = request.get_json()
+    text = data['text'].lower()
     print(text)
     if text.startswith("graph") and len(text.split(" ")) > 1:
         name = " ".join(text.split(" ")[1:])
         id = getRunnerId(name)
         data = getTimes(id)
-        success = plotTimes(data)
+        success = plotTimes(data['group_id'], data)
         if success:
             url = uploadImage()
             if DEBUG:
                 print('Upload successful.')
-            sendMessage(img=url)
+            sendMessage(data['group_id'], img=url)
     return "OK"
-    
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
-

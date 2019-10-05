@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter, SecondLocator
 from flask import Flask
 from flask import request
-
+import os
 
 DEBUG = False
-GROUPME_BOT_ID = ""
-GROUPME_IMAGE_SERVICE_TOKEN = ""
-
+GROUPME_BOT_ID = os.environ["BOT_TOKEN"]
+GROUPME_IMAGE_SERVICE_TOKEN = os.environ["IMAGE_TOKEN"]
+assert GROUPME_BOT_ID != ""
 app = Flask(__name__)
 def plotTimes(data):
     formatter = DateFormatter('%m-%d-%y')
@@ -148,5 +148,8 @@ def message():
     return "OK"
     
 if __name__ == '__main__':
+    assert GROUPME_BOT_ID != ""
+    assert GROUPME_IMAGE_SERVICE_TOKEN != ""
+
     app.run(debug=True, port=5000)
 

@@ -8,13 +8,11 @@ A heroku template for creating a groupme cross country bot.
 
 - [ ] Clone this repository
 - [ ] Create a groupme developer bot, use a random callback URL
-- [ ] Add your groupme bot id to graph.py under `GROUPME_BOT_ID`
-- [ ] Add your personal image uploading token to graph.py under `GROUPME_IMAGE_SERVICE_TOKEN`
-- [ ] Setup heroku
-    - [ ] Install heroku
-    - [ ] `heroku create` - make a note of the URL
-    - [ ] `git add .; git commit -am "Added Token"`
-    - [ ] `git push heroku master`
+- [ ] `heroku create` - make a note of the URL
+- [ ] `heroku config:set BOT_TOKEN=abc`
+- [ ] `heroku config:set IMAGE_TOKEN=xyz`
+- [ ] `git add .; git commit -am "Added Token"`
+- [ ] `git push heroku master`
 - [ ] Add the new callback URL to groupme bot
 
 ## Usage
